@@ -8,6 +8,11 @@ import type { ReminderItem, ReminderList, ReminderRunner } from "./types.js";
 const listNameSchema = z.string().min(1).optional().describe("Apple Reminders list name.");
 const includeCompletedSchema = z.boolean().optional().default(false);
 const reminderIdSchema = z.string().min(1).optional().describe("Apple Reminders id from list_reminders or search_reminders.");
+export const dueDateSchema = z
+  .string()
+  .refine((value) => !Number.isNaN(Date.parse(value)), "dueDate must be a valid date string.")
+  .optional()
+  .describe("Optional ISO 8601 due date.");
 
 function jsonContent(value: unknown) {
   return {
@@ -87,7 +92,7 @@ export function createServer(runner: ReminderRunner = runJxa) {
         title: z.string().min(1).describe("Reminder title."),
         notes: z.string().optional().describe("Optional reminder notes."),
         listName: listNameSchema,
-        dueDate: z.string().datetime().optional().describe("Optional ISO 8601 due date.")
+        dueDate: dueDateSchema
       }
     },
     async (args) => jsonContent(await client.createReminder(args))

@@ -18,3 +18,8 @@ and uses semantic versioning once releases begin.
 
 - Hardened the Reminders automation bridge by whitelisting supported operations,
   limiting request payload size, and passing a minimal environment to `osascript`.
+
+### Fixed
+
+- Accepted ISO due dates with explicit timezone offsets in the MCP tool schema,
+  matching the documented `create_reminder` examples.
