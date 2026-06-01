@@ -5,16 +5,22 @@ Apple Reminders, Calendar, Notes, and Contacts.
 
 ## Claude Desktop
 
+Build the project locally:
+
+```sh
+npm ci
+npm run build
+```
+
 Add this to your Claude Desktop MCP configuration:
 
 ```json
 {
   "mcpServers": {
     "apple-productivity": {
-      "command": "npx",
+      "command": "node",
       "args": [
-        "-y",
-        "apple-productivity-mcp"
+        "/absolute/path/to/apple-productivity-mcp/dist/index.js"
       ]
     }
   }
@@ -27,10 +33,9 @@ Add an MCP server with:
 
 ```json
 {
-  "command": "npx",
+  "command": "node",
   "args": [
-    "-y",
-    "apple-productivity-mcp"
+    "/absolute/path/to/apple-productivity-mcp/dist/index.js"
   ]
 }
 ```
@@ -62,14 +67,27 @@ tools are always read-only.
 
 ```json
 {
-  "command": "npx",
+  "command": "node",
   "args": [
-    "-y",
-    "apple-productivity-mcp"
+    "/absolute/path/to/apple-productivity-mcp/dist/index.js"
   ],
   "env": {
     "APPLE_PRODUCTIVITY_READ_ONLY": "1"
   }
+}
+```
+
+## npm after publishing
+
+After the package is published to npm, MCP client configs can use:
+
+```json
+{
+  "command": "npx",
+  "args": [
+    "-y",
+    "apple-productivity-mcp"
+  ]
 }
 ```
 

@@ -1,10 +1,9 @@
 {
   "mcpServers": {
     "apple-productivity": {
-      "command": "npx",
+      "command": "node",
       "args": [
-        "-y",
-        "apple-productivity-mcp"
+        "/absolute/path/to/apple-productivity-mcp/dist/index.js"
       ]
     }
   }
