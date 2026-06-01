@@ -11,6 +11,8 @@ and uses semantic versioning once releases begin.
 
 - Initial Apple Reminders MCP server with list, search, create, complete, today,
   overdue, and list-discovery tools.
+- Apple Calendar tools for listing calendars, listing/searching events, creating
+  events, and checking today's or upcoming events.
 - Local JXA bridge for private macOS Reminders access.
 - TypeScript build, Vitest unit tests, and package metadata.
 

@@ -4,11 +4,12 @@
 [![npm version](https://img.shields.io/npm/v/reminders-mcp.svg)](https://www.npmjs.com/package/reminders-mcp)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-A private, local MCP server that lets AI assistants work with Apple Reminders.
+A private, local MCP server that lets AI assistants work with Apple Reminders
+and Apple Calendar.
 
-This server runs on your Mac and talks to the local Reminders app through JXA
-(JavaScript for Automation). Your reminders are not uploaded to a third-party
-API by this package.
+This server runs on your Mac and talks to the local Reminders and Calendar apps
+through JXA (JavaScript for Automation). Your reminders and calendar events are
+not uploaded to a third-party API by this package.
 
 ## Tools
 
@@ -19,15 +20,21 @@ API by this package.
 - `complete_reminder` - mark a reminder complete by id or unique exact title
 - `get_today_reminders` - list incomplete reminders due today
 - `get_overdue_reminders` - list incomplete overdue reminders
+- `list_calendars` - list all Calendar calendars
+- `list_calendar_events` - list events in a date range
+- `search_calendar_events` - search events by title, notes, or location
+- `create_calendar_event` - create a calendar event
+- `get_today_calendar_events` - list events happening today
+- `get_upcoming_calendar_events` - list events in the next 7 days
 
 ## Requirements
 
-- macOS with Apple Reminders
+- macOS with Apple Reminders and Apple Calendar
 - Node.js 20 or newer
 - An MCP client such as Claude Desktop, Cursor, or Codex
 
 On first use, macOS may ask for permission to let your terminal or MCP client
-control Reminders. Allow it for the server to work.
+control Reminders or Calendar. Allow it for the server to work.
 
 ## Install
 
@@ -83,6 +90,9 @@ For a local checkout, use the built entrypoint:
 - "Show overdue reminders from Work."
 - "Search my reminders for passport."
 - "Mark the reminder with this id complete."
+- "What is on my calendar today?"
+- "Schedule a focus block tomorrow from 9 to 10."
+- "Find calendar events mentioning project kickoff."
 
 ## Development
 
@@ -118,4 +128,5 @@ If a tool fails with an Apple Reminders automation error:
 - Open Reminders once before using the server.
 - In System Settings, check Privacy & Security automation permissions for your
   terminal or MCP client.
-- If macOS prompts for access to Reminders, allow it and retry the tool call.
+- If macOS prompts for access to Reminders or Calendar, allow it and retry the
+  tool call.

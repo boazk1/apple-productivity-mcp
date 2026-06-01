@@ -10,7 +10,11 @@ const ALLOWED_OPERATIONS = new Set([
   "listReminders",
   "searchReminders",
   "createReminder",
-  "completeReminder"
+  "completeReminder",
+  "listCalendars",
+  "listCalendarEvents",
+  "searchCalendarEvents",
+  "createCalendarEvent"
 ]);
 
 const SCRIPT = String.raw`
@@ -146,7 +150,128 @@ function completeReminder(app, options) {
   return serializeReminder(reminder, matches[0].listName);
 }
 
+function calendarApp() {
+  return Application("/System/Applications/Calendar.app");
+}
+
+function serializeCalendar(calendar) {
+  return {
+    id: calendar.id(),
+    name: calendar.name(),
+    color: calendar.color() || null
+  };
+}
+
+function serializeEvent(event, calendarName) {
+  return {
+    id: event.id(),
+    title: event.summary(),
+    notes: event.description() || null,
+    location: event.location() || null,
+    startDate: new Date(event.startDate()).toISOString(),
+    endDate: new Date(event.endDate()).toISOString(),
+    allDay: Boolean(event.alldayEvent()),
+    calendarName
+  };
+}
+
+function getCalendar(app, calendarName) {
+  if (!calendarName) {
+    const calendars = app.calendars();
+    if (!calendars.length) {
+      fail("No calendars are available.");
+    }
+    return calendars[0];
+  }
+
+  const calendar = app.calendars.byName(calendarName);
+  try {
+    calendar.name();
+    return calendar;
+  } catch (_error) {
+    fail('Calendar "' + calendarName + '" was not found.');
+  }
+}
+
+function parseDate(value, label) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    fail(label + " must be a valid date string.");
+  }
+  return date;
+}
+
+function allCalendarEvents(app, options) {
+  const start = parseDate(options.startDate, "startDate");
+  const end = parseDate(options.endDate, "endDate");
+  if (end <= start) {
+    fail("endDate must be after startDate.");
+  }
+
+  const targetCalendars = options.calendarName ? [getCalendar(app, options.calendarName)] : app.calendars();
+  const results = [];
+
+  for (const calendar of targetCalendars) {
+    const calendarName = calendar.name();
+    for (const event of calendar.events()) {
+      const eventEnd = new Date(event.endDate());
+      const eventStart = new Date(event.startDate());
+      if (eventEnd <= start || eventStart >= end) {
+        continue;
+      }
+      results.push(serializeEvent(event, calendarName));
+    }
+  }
+
+  return results.sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
+}
+
+function createCalendarEvent(app, options) {
+  const calendar = getCalendar(app, options.calendarName);
+  const start = parseDate(options.startDate, "startDate");
+  const end = parseDate(options.endDate, "endDate");
+  if (end <= start) {
+    fail("endDate must be after startDate.");
+  }
+
+  const properties = {
+    summary: options.title,
+    startDate: start,
+    endDate: end,
+    alldayEvent: Boolean(options.allDay)
+  };
+
+  if (options.notes) {
+    properties.description = options.notes;
+  }
+  if (options.location) {
+    properties.location = options.location;
+  }
+
+  const event = app.Event(properties);
+  calendar.events.push(event);
+  return serializeEvent(event, calendar.name());
+}
+
 function run(operation, input) {
+  switch (operation) {
+    case "listReminderLists":
+    case "listReminders":
+    case "searchReminders":
+    case "createReminder":
+    case "completeReminder":
+      return runReminders(operation, input);
+    case "listCalendars":
+    case "listCalendarEvents":
+    case "searchCalendarEvents":
+    case "createCalendarEvent":
+      return runCalendar(operation, input);
+    default:
+      fail("Unknown operation: " + operation);
+  }
+}
+
+function runReminders(operation, input) {
   const app = Application("/System/Applications/Reminders.app");
   app.includeStandardAdditions = true;
 
@@ -169,6 +294,30 @@ function run(operation, input) {
       return createReminder(app, input);
     case "completeReminder":
       return completeReminder(app, input);
+    default:
+      fail("Unknown operation: " + operation);
+  }
+}
+
+function runCalendar(operation, input) {
+  const app = calendarApp();
+  app.includeStandardAdditions = true;
+
+  switch (operation) {
+    case "listCalendars":
+      return app.calendars().map(serializeCalendar);
+    case "listCalendarEvents":
+      return allCalendarEvents(app, input);
+    case "searchCalendarEvents": {
+      const query = input.query.toLowerCase();
+      return allCalendarEvents(app, input).filter((event) =>
+        event.title.toLowerCase().includes(query) ||
+        (event.notes || "").toLowerCase().includes(query) ||
+        (event.location || "").toLowerCase().includes(query)
+      );
+    }
+    case "createCalendarEvent":
+      return createCalendarEvent(app, input);
     default:
       fail("Unknown operation: " + operation);
   }

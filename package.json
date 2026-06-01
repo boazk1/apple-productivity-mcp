@@ -1,7 +1,7 @@
 {
   "name": "reminders-mcp",
   "version": "0.1.0",
-  "description": "A private, local MCP server that lets AI assistants work with Apple Reminders.",
+  "description": "A private, local MCP server that lets AI assistants work with Apple Reminders and Calendar.",
   "type": "module",
   "homepage": "https://github.com/boazk1/reminders-mcp#readme",
   "repository": {
@@ -30,6 +30,8 @@
     "mcp",
     "model-context-protocol",
     "apple-reminders",
+    "apple-calendar",
+    "calendar",
     "reminders",
     "ai"
   ],

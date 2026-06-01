@@ -39,4 +39,41 @@ export type CompleteReminderOptions = {
   listName?: string;
 };
 
+export type CalendarItem = {
+  id: string;
+  name: string;
+  color: string | null;
+};
+
+export type CalendarEvent = {
+  id: string;
+  title: string;
+  notes: string | null;
+  location: string | null;
+  startDate: string;
+  endDate: string;
+  allDay: boolean;
+  calendarName: string;
+};
+
+export type ListCalendarEventsOptions = {
+  calendarName?: string;
+  startDate?: string;
+  endDate?: string;
+};
+
+export type SearchCalendarEventsOptions = ListCalendarEventsOptions & {
+  query: string;
+};
+
+export type CreateCalendarEventOptions = {
+  title: string;
+  calendarName?: string;
+  startDate: string;
+  endDate: string;
+  notes?: string;
+  location?: string;
+  allDay?: boolean;
+};
+
 export type ReminderRunner = <T>(operation: string, payload?: unknown) => Promise<T>;
