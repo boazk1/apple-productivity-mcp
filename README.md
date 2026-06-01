@@ -1,6 +1,7 @@
 # apple-productivity-mcp
 
 [![CI](https://github.com/boazk1/apple-productivity-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/boazk1/apple-productivity-mcp/actions/workflows/ci.yml)
+[![npm version](https://img.shields.io/npm/v/apple-productivity-mcp.svg)](https://www.npmjs.com/package/apple-productivity-mcp)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 A private, local MCP server that lets AI assistants work with Apple Reminders
@@ -45,6 +46,12 @@ third-party API by this package.
 
 On first use, macOS may ask for permission to let your terminal or MCP client
 control Reminders, Calendar, Notes, or Contacts. Allow it for the server to work.
+
+## Install
+
+```sh
+npm install -g apple-productivity-mcp
+```
 
 ## Install From Source
 

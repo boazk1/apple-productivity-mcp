@@ -12,8 +12,8 @@
     "url": "https://github.com/boazk1/apple-productivity-mcp/issues"
   },
   "bin": {
-    "apple-productivity-mcp": "./dist/index.js",
-    "reminders-mcp": "./dist/index.js"
+    "apple-productivity-mcp": "dist/index.js",
+    "reminders-mcp": "dist/index.js"
   },
   "files": [
     "dist",
