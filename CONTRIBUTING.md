@@ -11,9 +11,9 @@ npm test
 npm run build
 ```
 
-The unit tests do not modify Apple Reminders or Calendar. Code that talks to
-Apple apps is kept behind client classes so behavior can be tested with a fake
-runner.
+The unit tests do not modify Apple Reminders, Calendar, or Notes. Code that
+talks to Apple apps is kept behind client classes so behavior can be tested with
+a fake runner.
 
 ## Pull requests
 
@@ -21,10 +21,11 @@ runner.
 - Add or update tests for behavior changes.
 - Document new tools, arguments, and macOS permission requirements.
 - Avoid logging reminder titles, event titles, notes, list/calendar names,
-  locations, or other private data unless the user explicitly requested it.
+  note bodies, locations, or other private data unless the user explicitly
+  requested it.
 
 ## Local Apple app testing
 
 macOS may prompt for automation permissions the first time an MCP client or
-terminal controls Reminders or Calendar. Test against a disposable Reminders
-list or Calendar calendar when validating create, update, or complete behavior.
+terminal controls Reminders, Calendar, or Notes. Test against disposable data
+when validating create, update, append, or complete behavior.

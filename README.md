@@ -5,11 +5,11 @@
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 A private, local MCP server that lets AI assistants work with Apple Reminders
-and Apple Calendar.
+Apple Calendar, and Apple Notes.
 
-This server runs on your Mac and talks to the local Reminders and Calendar apps
-through JXA (JavaScript for Automation). Your reminders and calendar events are
-not uploaded to a third-party API by this package.
+This server runs on your Mac and talks to the local Reminders, Calendar, and
+Notes apps through JXA (JavaScript for Automation). Your reminders, calendar
+events, and notes are not uploaded to a third-party API by this package.
 
 ## Tools
 
@@ -26,15 +26,20 @@ not uploaded to a third-party API by this package.
 - `create_calendar_event` - create a calendar event
 - `get_today_calendar_events` - list events happening today
 - `get_upcoming_calendar_events` - list events in the next 7 days
+- `list_notes_folders` - list all Notes folders
+- `list_notes` - list notes, optionally by folder
+- `search_notes` - search note titles and bodies
+- `create_note` - create a note
+- `append_to_note` - append text to a note
 
 ## Requirements
 
-- macOS with Apple Reminders and Apple Calendar
+- macOS with Apple Reminders, Apple Calendar, and Apple Notes
 - Node.js 20 or newer
 - An MCP client such as Claude Desktop, Cursor, or Codex
 
 On first use, macOS may ask for permission to let your terminal or MCP client
-control Reminders or Calendar. Allow it for the server to work.
+control Reminders, Calendar, or Notes. Allow it for the server to work.
 
 ## Install
 
@@ -93,6 +98,9 @@ For a local checkout, use the built entrypoint:
 - "What is on my calendar today?"
 - "Schedule a focus block tomorrow from 9 to 10."
 - "Find calendar events mentioning project kickoff."
+- "Find my notes about the launch plan."
+- "Create a note with these meeting takeaways."
+- "Append this checklist to my project note."
 
 ## Development
 
@@ -103,8 +111,8 @@ npm run typecheck
 npm run build
 ```
 
-The Reminders bridge is isolated behind `RemindersClient`, so unit tests can run
-without opening or modifying your Reminders app.
+Apple app access is isolated behind small client classes, so unit tests can run
+without opening or modifying your Reminders, Calendar, or Notes data.
 
 ## Project
 
@@ -123,10 +131,10 @@ without opening or modifying your Reminders app.
 
 ## Troubleshooting
 
-If a tool fails with an Apple Reminders automation error:
+If a tool fails with an Apple app automation error:
 
-- Open Reminders once before using the server.
+- Open the relevant Apple app once before using the server.
 - In System Settings, check Privacy & Security automation permissions for your
   terminal or MCP client.
-- If macOS prompts for access to Reminders or Calendar, allow it and retry the
-  tool call.
+- If macOS prompts for access to Reminders, Calendar, or Notes, allow it and
+  retry the tool call.

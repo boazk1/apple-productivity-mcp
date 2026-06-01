@@ -3,13 +3,16 @@ import { z } from "zod";
 
 import { CalendarClient } from "./calendar.js";
 import { runJxa } from "./jxa.js";
+import { NotesClient } from "./notes.js";
 import { RemindersClient } from "./reminders.js";
-import type { CalendarEvent, CalendarItem, ReminderItem, ReminderList, ReminderRunner } from "./types.js";
+import type { CalendarEvent, CalendarItem, NoteItem, NotesFolder, ReminderItem, ReminderList, ReminderRunner } from "./types.js";
 
 const listNameSchema = z.string().min(1).optional().describe("Apple Reminders list name.");
 const calendarNameSchema = z.string().min(1).optional().describe("Apple Calendar name.");
+const folderNameSchema = z.string().min(1).optional().describe("Apple Notes folder name.");
 const includeCompletedSchema = z.boolean().optional().default(false);
 const reminderIdSchema = z.string().min(1).optional().describe("Apple Reminders id from list_reminders or search_reminders.");
+const noteIdSchema = z.string().min(1).optional().describe("Apple Notes id from list_notes or search_notes.");
 export const dueDateSchema = z
   .string()
   .refine((value) => !Number.isNaN(Date.parse(value)), "dueDate must be a valid date string.")
@@ -58,9 +61,24 @@ function summarizeEvents(events: CalendarEvent[]) {
   };
 }
 
+function summarizeFolders(folders: NotesFolder[]) {
+  return {
+    count: folders.length,
+    folders
+  };
+}
+
+function summarizeNotes(notes: NoteItem[]) {
+  return {
+    count: notes.length,
+    notes
+  };
+}
+
 export function createServer(runner: ReminderRunner = runJxa) {
   const reminders = new RemindersClient(runner);
   const calendar = new CalendarClient(runner);
+  const notes = new NotesClient(runner);
   const server = new McpServer({
     name: "reminders-mcp",
     version: "0.1.0"
@@ -238,6 +256,70 @@ export function createServer(runner: ReminderRunner = runJxa) {
       }
     },
     async (args) => jsonContent(summarizeEvents(await calendar.getUpcomingEvents(args)))
+  );
+
+  server.registerTool(
+    "list_notes_folders",
+    {
+      title: "List Notes folders",
+      description: "List all Apple Notes folders available on this Mac.",
+      inputSchema: {}
+    },
+    async () => jsonContent(summarizeFolders(await notes.listFolders()))
+  );
+
+  server.registerTool(
+    "list_notes",
+    {
+      title: "List notes",
+      description: "List Apple Notes, optionally scoped to a folder.",
+      inputSchema: {
+        folderName: folderNameSchema
+      }
+    },
+    async (args) => jsonContent(summarizeNotes(await notes.listNotes(args)))
+  );
+
+  server.registerTool(
+    "search_notes",
+    {
+      title: "Search notes",
+      description: "Search Apple Notes by title or body.",
+      inputSchema: {
+        query: z.string().min(1).describe("Case-insensitive search query."),
+        folderName: folderNameSchema
+      }
+    },
+    async (args) => jsonContent(summarizeNotes(await notes.searchNotes(args)))
+  );
+
+  server.registerTool(
+    "create_note",
+    {
+      title: "Create note",
+      description: "Create a new Apple Note in a specific folder or the default folder.",
+      inputSchema: {
+        title: z.string().min(1).describe("Note title."),
+        body: z.string().optional().describe("Optional note body."),
+        folderName: folderNameSchema
+      }
+    },
+    async (args) => jsonContent(await notes.createNote(args))
+  );
+
+  server.registerTool(
+    "append_to_note",
+    {
+      title: "Append to note",
+      description: "Append text to an Apple Note by id, or by exact title when it is unique.",
+      inputSchema: {
+        id: noteIdSchema,
+        title: z.string().min(1).optional().describe("Exact note title. Use id when possible."),
+        folderName: folderNameSchema,
+        text: z.string().min(1).describe("Text to append.")
+      }
+    },
+    async (args) => jsonContent(await notes.appendToNote(args))
   );
 
   return server;

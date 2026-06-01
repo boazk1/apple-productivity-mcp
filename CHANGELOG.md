@@ -13,6 +13,8 @@ and uses semantic versioning once releases begin.
   overdue, and list-discovery tools.
 - Apple Calendar tools for listing calendars, listing/searching events, creating
   events, and checking today's or upcoming events.
+- Apple Notes tools for listing folders, listing/searching notes, creating
+  notes, and appending to existing notes.
 - Local JXA bridge for private macOS Reminders access.
 - TypeScript build, Vitest unit tests, and package metadata.
 

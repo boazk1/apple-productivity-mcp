@@ -76,4 +76,39 @@ export type CreateCalendarEventOptions = {
   allDay?: boolean;
 };
 
+export type NotesFolder = {
+  id: string;
+  name: string;
+};
+
+export type NoteItem = {
+  id: string;
+  title: string;
+  body: string;
+  folderName: string;
+  createdAt: string | null;
+  updatedAt: string | null;
+};
+
+export type ListNotesOptions = {
+  folderName?: string;
+};
+
+export type SearchNotesOptions = ListNotesOptions & {
+  query: string;
+};
+
+export type CreateNoteOptions = {
+  title: string;
+  body?: string;
+  folderName?: string;
+};
+
+export type AppendNoteOptions = {
+  id?: string;
+  title?: string;
+  folderName?: string;
+  text: string;
+};
+
 export type ReminderRunner = <T>(operation: string, payload?: unknown) => Promise<T>;

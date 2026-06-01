@@ -14,7 +14,12 @@ const ALLOWED_OPERATIONS = new Set([
   "listCalendars",
   "listCalendarEvents",
   "searchCalendarEvents",
-  "createCalendarEvent"
+  "createCalendarEvent",
+  "listNotesFolders",
+  "listNotes",
+  "searchNotes",
+  "createNote",
+  "appendToNote"
 ]);
 
 const SCRIPT = String.raw`
@@ -253,6 +258,137 @@ function createCalendarEvent(app, options) {
   return serializeEvent(event, calendar.name());
 }
 
+function notesApp() {
+  return Application("/System/Applications/Notes.app");
+}
+
+function plainText(html) {
+  return String(html || "")
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<\/p>/gi, "\n")
+    .replace(/<[^>]+>/g, "")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .trim();
+}
+
+function escapeHtml(value) {
+  return String(value || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+function paragraphs(value) {
+  return String(value || "")
+    .split(/\n{2,}/)
+    .map((paragraph) => "<p>" + escapeHtml(paragraph).replace(/\n/g, "<br>") + "</p>")
+    .join("");
+}
+
+function serializeFolder(folder) {
+  return {
+    id: folder.id(),
+    name: folder.name()
+  };
+}
+
+function serializeNote(note, folderName) {
+  return {
+    id: note.id(),
+    title: note.name(),
+    body: plainText(note.body()),
+    folderName,
+    createdAt: nullableDate(note.creationDate()),
+    updatedAt: nullableDate(note.modificationDate())
+  };
+}
+
+function getFolder(app, folderName) {
+  if (!folderName) {
+    const folders = app.folders();
+    if (!folders.length) {
+      fail("No Notes folders are available.");
+    }
+    return folders[0];
+  }
+
+  const folder = app.folders.byName(folderName);
+  try {
+    folder.name();
+    return folder;
+  } catch (_error) {
+    fail('Notes folder "' + folderName + '" was not found.');
+  }
+}
+
+function allNotes(app, options) {
+  const targetFolders = options.folderName ? [getFolder(app, options.folderName)] : app.folders();
+  const results = [];
+
+  for (const folder of targetFolders) {
+    const folderName = folder.name();
+    for (const note of folder.notes()) {
+      results.push(serializeNote(note, folderName));
+    }
+  }
+
+  return results.sort((a, b) => {
+    const aTime = a.updatedAt ? new Date(a.updatedAt).getTime() : 0;
+    const bTime = b.updatedAt ? new Date(b.updatedAt).getTime() : 0;
+    return bTime - aTime;
+  });
+}
+
+function findSingleNote(app, options) {
+  if (!options.id && !options.title) {
+    fail("Either id or title is required.");
+  }
+
+  const matches = allNotes(app, { folderName: options.folderName }).filter((note) => {
+    if (options.id) {
+      return note.id === options.id;
+    }
+    return note.title.toLowerCase() === options.title.toLowerCase();
+  });
+
+  if (matches.length === 0) {
+    fail("No matching note was found.");
+  }
+  if (matches.length > 1) {
+    fail("Multiple notes matched. Retry with a note id or folderName.");
+  }
+
+  const folder = getFolder(app, matches[0].folderName);
+  return {
+    folder,
+    folderName: matches[0].folderName,
+    note: folder.notes.byId(matches[0].id)
+  };
+}
+
+function createNote(app, options) {
+  const folder = getFolder(app, options.folderName);
+  const body = "<h1>" + escapeHtml(options.title) + "</h1>" + paragraphs(options.body || "");
+  const note = app.Note({
+    name: options.title,
+    body
+  });
+
+  folder.notes.push(note);
+  return serializeNote(note, folder.name());
+}
+
+function appendToNote(app, options) {
+  const found = findSingleNote(app, options);
+  const currentBody = found.note.body() || "";
+  found.note.body = currentBody + paragraphs("\n" + options.text);
+  return serializeNote(found.note, found.folderName);
+}
+
 function run(operation, input) {
   switch (operation) {
     case "listReminderLists":
@@ -266,6 +402,12 @@ function run(operation, input) {
     case "searchCalendarEvents":
     case "createCalendarEvent":
       return runCalendar(operation, input);
+    case "listNotesFolders":
+    case "listNotes":
+    case "searchNotes":
+    case "createNote":
+    case "appendToNote":
+      return runNotes(operation, input);
     default:
       fail("Unknown operation: " + operation);
   }
@@ -318,6 +460,31 @@ function runCalendar(operation, input) {
     }
     case "createCalendarEvent":
       return createCalendarEvent(app, input);
+    default:
+      fail("Unknown operation: " + operation);
+  }
+}
+
+function runNotes(operation, input) {
+  const app = notesApp();
+  app.includeStandardAdditions = true;
+
+  switch (operation) {
+    case "listNotesFolders":
+      return app.folders().map(serializeFolder);
+    case "listNotes":
+      return allNotes(app, input);
+    case "searchNotes": {
+      const query = input.query.toLowerCase();
+      return allNotes(app, input).filter((note) =>
+        note.title.toLowerCase().includes(query) ||
+        note.body.toLowerCase().includes(query)
+      );
+    }
+    case "createNote":
+      return createNote(app, input);
+    case "appendToNote":
+      return appendToNote(app, input);
     default:
       fail("Unknown operation: " + operation);
   }
