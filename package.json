@@ -3,13 +3,13 @@
   "version": "0.1.0",
   "description": "A private, local MCP server that lets AI assistants work with Apple Reminders, Calendar, and Notes.",
   "type": "module",
-  "homepage": "https://github.com/boazk1/reminders-mcp#readme",
+  "homepage": "https://github.com/boazk1/apple-productivity-mcp#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/boazk1/reminders-mcp.git"
+    "url": "git+https://github.com/boazk1/apple-productivity-mcp.git"
   },
   "bugs": {
-    "url": "https://github.com/boazk1/reminders-mcp/issues"
+    "url": "https://github.com/boazk1/apple-productivity-mcp/issues"
   },
   "bin": {
     "apple-productivity-mcp": "./dist/index.js",
@@ -17,13 +17,18 @@
   },
   "files": [
     "dist",
+    "docs",
     "examples",
+    "CHANGELOG.md",
+    "CONTRIBUTING.md",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "SECURITY.md"
   ],
   "scripts": {
     "build": "tsc",
     "dev": "tsx src/index.ts",
+    "prepublishOnly": "npm run typecheck && npm test && npm run build && npm audit --omit=dev",
     "test": "vitest run",
     "typecheck": "tsc --noEmit"
   },

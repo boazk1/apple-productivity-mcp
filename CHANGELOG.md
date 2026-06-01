@@ -15,6 +15,10 @@ and uses semantic versioning once releases begin.
   events, and checking today's or upcoming events.
 - Apple Notes tools for listing folders, listing/searching notes, creating
   notes, and appending to existing notes.
+- Update tools for reminders, calendar events, and notes.
+- Read-only mode via `APPLE_PRODUCTIVITY_READ_ONLY=1`.
+- Installation, integration testing, and release documentation.
+- Scheduled production dependency audit workflow.
 - Local JXA bridge for private macOS Reminders access.
 - TypeScript build, Vitest unit tests, and package metadata.
 
@@ -22,6 +26,7 @@ and uses semantic versioning once releases begin.
 
 - Renamed the package identity to `apple-productivity-mcp` while keeping the
   existing `reminders-mcp` binary alias for compatibility.
+- Updated repository metadata to the renamed GitHub repository.
 
 ### Security
 

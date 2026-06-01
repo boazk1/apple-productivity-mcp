@@ -1,6 +1,6 @@
 # apple-productivity-mcp
 
-[![CI](https://github.com/boazk1/reminders-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/boazk1/reminders-mcp/actions/workflows/ci.yml)
+[![CI](https://github.com/boazk1/apple-productivity-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/boazk1/apple-productivity-mcp/actions/workflows/ci.yml)
 [![npm version](https://img.shields.io/npm/v/apple-productivity-mcp.svg)](https://www.npmjs.com/package/apple-productivity-mcp)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
@@ -18,12 +18,14 @@ events, and notes are not uploaded to a third-party API by this package.
 - `search_reminders` - search reminder titles and notes
 - `create_reminder` - create a reminder
 - `complete_reminder` - mark a reminder complete by id or unique exact title
+- `update_reminder` - update a reminder by id
 - `get_today_reminders` - list incomplete reminders due today
 - `get_overdue_reminders` - list incomplete overdue reminders
 - `list_calendars` - list all Calendar calendars
 - `list_calendar_events` - list events in a date range
 - `search_calendar_events` - search events by title, notes, or location
 - `create_calendar_event` - create a calendar event
+- `update_calendar_event` - update a calendar event by id
 - `get_today_calendar_events` - list events happening today
 - `get_upcoming_calendar_events` - list events in the next 7 days
 - `list_notes_folders` - list all Notes folders
@@ -31,6 +33,7 @@ events, and notes are not uploaded to a third-party API by this package.
 - `search_notes` - search note titles and bodies
 - `create_note` - create a note
 - `append_to_note` - append text to a note
+- `update_note` - update a note by id
 
 ## Requirements
 
@@ -54,6 +57,9 @@ npm install
 npm run build
 npm run dev
 ```
+
+See [Installation](docs/INSTALL.md) for Claude Desktop, Cursor, local checkout,
+read-only mode, and macOS permission setup.
 
 ## Claude Desktop
 
@@ -101,6 +107,7 @@ For a local checkout, use the built entrypoint:
 - "Find my notes about the launch plan."
 - "Create a note with these meeting takeaways."
 - "Append this checklist to my project note."
+- "Run in read-only mode while I try this server."
 
 ## Development
 
@@ -119,6 +126,9 @@ without opening or modifying your Reminders, Calendar, or Notes data.
 - [Changelog](CHANGELOG.md)
 - [Contributing](CONTRIBUTING.md)
 - [Security policy](SECURITY.md)
+- [Installation](docs/INSTALL.md)
+- [Integration tests](docs/INTEGRATION_TESTS.md)
+- [Release checklist](docs/RELEASE.md)
 
 ## Notes
 
@@ -128,6 +138,8 @@ without opening or modifying your Reminders, Calendar, or Notes data.
   may match.
 - Dates should be provided as ISO 8601 strings, for example
   `2026-06-01T09:00:00+02:00`.
+- Set `APPLE_PRODUCTIVITY_READ_ONLY=1` to block write tools while keeping
+  read/search tools available.
 
 ## Troubleshooting
 
