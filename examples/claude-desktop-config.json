@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "reminders": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "reminders-mcp"
+      ]
+    }
+  }
+}
