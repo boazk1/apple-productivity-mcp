@@ -1,5 +1,9 @@
 # reminders-mcp
 
+[![CI](https://github.com/boazk1/reminders-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/boazk1/reminders-mcp/actions/workflows/ci.yml)
+[![npm version](https://img.shields.io/npm/v/reminders-mcp.svg)](https://www.npmjs.com/package/reminders-mcp)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
 A private, local MCP server that lets AI assistants work with Apple Reminders.
 
 This server runs on your Mac and talks to the local Reminders app through JXA
@@ -91,6 +95,12 @@ npm run build
 
 The Reminders bridge is isolated behind `RemindersClient`, so unit tests can run
 without opening or modifying your Reminders app.
+
+## Project
+
+- [Changelog](CHANGELOG.md)
+- [Contributing](CONTRIBUTING.md)
+- [Security policy](SECURITY.md)
 
 ## Notes
 

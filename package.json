@@ -3,6 +3,14 @@
   "version": "0.1.0",
   "description": "A private, local MCP server that lets AI assistants work with Apple Reminders.",
   "type": "module",
+  "homepage": "https://github.com/boazk1/reminders-mcp#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/boazk1/reminders-mcp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/boazk1/reminders-mcp/issues"
+  },
   "bin": {
     "reminders-mcp": "./dist/index.js"
   },
@@ -26,6 +34,7 @@
     "ai"
   ],
   "license": "MIT",
+  "author": "boazk1",
   "engines": {
     "node": ">=20"
   },
