@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 
+import { createAutomationEnv, runJxa } from "../src/jxa.js";
 import { RemindersClient } from "../src/reminders.js";
 import type { ReminderItem, ReminderRunner } from "../src/types.js";
 
@@ -83,5 +84,31 @@ describe("RemindersClient", () => {
         }
       ]
     ]);
+  });
+});
+
+describe("runJxa guardrails", () => {
+  it("rejects unsupported operations before invoking automation", async () => {
+    await expect(runJxa("deleteEverything", {})).rejects.toThrow(
+      "Unsupported Reminders operation"
+    );
+  });
+
+  it("rejects oversized payloads before invoking automation", async () => {
+    await expect(
+      runJxa("listReminders", {
+        query: "x".repeat(70 * 1024)
+      })
+    ).rejects.toThrow("payload is too large");
+  });
+
+  it("passes a narrow environment to osascript", () => {
+    const env = createAutomationEnv("listReminders", "{}");
+
+    expect(env.REMINDERS_MCP_OPERATION).toBe("listReminders");
+    expect(env.REMINDERS_MCP_INPUT).toBe("{}");
+    expect(env.PATH).toBeTruthy();
+    expect(env).not.toHaveProperty("GITHUB_TOKEN");
+    expect(env).not.toHaveProperty("NPM_TOKEN");
   });
 });

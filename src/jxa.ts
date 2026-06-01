@@ -4,6 +4,14 @@ import { promisify } from "node:util";
 import type { ReminderRunner } from "./types.js";
 
 const execFileAsync = promisify(execFile);
+const MAX_INPUT_BYTES = 64 * 1024;
+const ALLOWED_OPERATIONS = new Set([
+  "listReminderLists",
+  "listReminders",
+  "searchReminders",
+  "createReminder",
+  "completeReminder"
+]);
 
 const SCRIPT = String.raw`
 ObjC.import("stdlib");
@@ -170,16 +178,20 @@ JSON.stringify(run($.getenv("REMINDERS_MCP_OPERATION"), parseInput()));
 `;
 
 export const runJxa: ReminderRunner = async <T>(operation: string, payload?: unknown) => {
+  if (!ALLOWED_OPERATIONS.has(operation)) {
+    throw new Error(`Unsupported Reminders operation: ${operation}`);
+  }
+
   const input = JSON.stringify(payload ?? {});
+  if (Buffer.byteLength(input, "utf8") > MAX_INPUT_BYTES) {
+    throw new Error("Reminders request payload is too large.");
+  }
+
   let stdout = "";
 
   try {
     const result = await execFileAsync("osascript", ["-l", "JavaScript", "-e", SCRIPT], {
-      env: {
-        ...process.env,
-        REMINDERS_MCP_OPERATION: operation,
-        REMINDERS_MCP_INPUT: input
-      },
+      env: createAutomationEnv(operation, input),
       maxBuffer: 1024 * 1024 * 10
     });
     stdout = result.stdout;
@@ -195,6 +207,18 @@ export const runJxa: ReminderRunner = async <T>(operation: string, payload?: unk
 
   return JSON.parse(output) as T;
 };
+
+export function createAutomationEnv(operation: string, input: string): NodeJS.ProcessEnv {
+  return {
+    HOME: process.env.HOME,
+    LANG: process.env.LANG,
+    LC_ALL: process.env.LC_ALL,
+    PATH: process.env.PATH ?? "/usr/bin:/bin:/usr/sbin:/sbin",
+    REMINDERS_MCP_INPUT: input,
+    REMINDERS_MCP_OPERATION: operation,
+    USER: process.env.USER
+  };
+}
 
 function extractOsascriptError(error: unknown) {
   if (typeof error === "object" && error !== null && "stderr" in error) {

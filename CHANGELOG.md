@@ -13,3 +13,8 @@ and uses semantic versioning once releases begin.
   overdue, and list-discovery tools.
 - Local JXA bridge for private macOS Reminders access.
 - TypeScript build, Vitest unit tests, and package metadata.
+
+### Security
+
+- Hardened the Reminders automation bridge by whitelisting supported operations,
+  limiting request payload size, and passing a minimal environment to `osascript`.
