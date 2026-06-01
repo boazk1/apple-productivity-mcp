@@ -80,7 +80,7 @@ export function createServer(runner: ReminderRunner = runJxa) {
   const calendar = new CalendarClient(runner);
   const notes = new NotesClient(runner);
   const server = new McpServer({
-    name: "reminders-mcp",
+    name: "apple-productivity-mcp",
     version: "0.1.0"
   });
 

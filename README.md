@@ -1,7 +1,7 @@
-# reminders-mcp
+# apple-productivity-mcp
 
 [![CI](https://github.com/boazk1/reminders-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/boazk1/reminders-mcp/actions/workflows/ci.yml)
-[![npm version](https://img.shields.io/npm/v/reminders-mcp.svg)](https://www.npmjs.com/package/reminders-mcp)
+[![npm version](https://img.shields.io/npm/v/apple-productivity-mcp.svg)](https://www.npmjs.com/package/apple-productivity-mcp)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 A private, local MCP server that lets AI assistants work with Apple Reminders
@@ -44,7 +44,7 @@ control Reminders, Calendar, or Notes. Allow it for the server to work.
 ## Install
 
 ```sh
-npm install -g reminders-mcp
+npm install -g apple-productivity-mcp
 ```
 
 For local development:
@@ -62,11 +62,11 @@ Add this to your Claude Desktop MCP config:
 ```json
 {
   "mcpServers": {
-    "reminders": {
+    "apple-productivity": {
       "command": "npx",
       "args": [
         "-y",
-        "reminders-mcp"
+        "apple-productivity-mcp"
       ]
     }
   }
@@ -78,10 +78,10 @@ For a local checkout, use the built entrypoint:
 ```json
 {
   "mcpServers": {
-    "reminders": {
+    "apple-productivity": {
       "command": "node",
       "args": [
-        "/absolute/path/to/reminders-mcp/dist/index.js"
+        "/absolute/path/to/apple-productivity-mcp/dist/index.js"
       ]
     }
   }

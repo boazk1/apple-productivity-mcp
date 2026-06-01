@@ -1,8 +1,8 @@
 # Security Policy
 
-`reminders-mcp` is a local MCP server for private Apple Reminders, Calendar, and
-Notes data. Please avoid sharing reminder, calendar, or notes content in public
-issues.
+`apple-productivity-mcp` is a local MCP server for private Apple Reminders,
+Calendar, and Notes data. Please avoid sharing reminder, calendar, or notes
+content in public issues.
 
 ## Supported versions
 

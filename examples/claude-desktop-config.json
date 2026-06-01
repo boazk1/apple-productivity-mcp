@@ -1,10 +1,10 @@
 {
   "mcpServers": {
-    "reminders": {
+    "apple-productivity": {
       "command": "npx",
       "args": [
         "-y",
-        "reminders-mcp"
+        "apple-productivity-mcp"
       ]
     }
   }

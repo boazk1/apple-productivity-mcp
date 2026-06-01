@@ -1,5 +1,5 @@
 {
-  "name": "reminders-mcp",
+  "name": "apple-productivity-mcp",
   "version": "0.1.0",
   "description": "A private, local MCP server that lets AI assistants work with Apple Reminders, Calendar, and Notes.",
   "type": "module",
@@ -12,6 +12,7 @@
     "url": "https://github.com/boazk1/reminders-mcp/issues"
   },
   "bin": {
+    "apple-productivity-mcp": "./dist/index.js",
     "reminders-mcp": "./dist/index.js"
   },
   "files": [

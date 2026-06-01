@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for helping improve `reminders-mcp`.
+Thanks for helping improve `apple-productivity-mcp`.
 
 ## Development
 

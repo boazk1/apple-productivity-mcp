@@ -18,6 +18,11 @@ and uses semantic versioning once releases begin.
 - Local JXA bridge for private macOS Reminders access.
 - TypeScript build, Vitest unit tests, and package metadata.
 
+### Changed
+
+- Renamed the package identity to `apple-productivity-mcp` while keeping the
+  existing `reminders-mcp` binary alias for compatibility.
+
 ### Security
 
 - Hardened the Reminders automation bridge by whitelisting supported operations,
