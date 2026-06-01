@@ -4,8 +4,10 @@
 [![npm version](https://img.shields.io/npm/v/apple-productivity-mcp.svg)](https://www.npmjs.com/package/apple-productivity-mcp)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-A private, local MCP server that lets AI assistants work with Apple Reminders
+A private, local MCP server that lets AI assistants work with Apple Reminders,
 Apple Calendar, Apple Notes, and Apple Contacts.
+
+Package: [npmjs.com/package/apple-productivity-mcp](https://www.npmjs.com/package/apple-productivity-mcp)
 
 This server runs on your Mac and talks to the local Reminders, Calendar, and
 Notes apps through JXA (JavaScript for Automation). Contacts support is read-only.
