@@ -5,7 +5,8 @@ import type {
   ReminderItem,
   ReminderList,
   ReminderRunner,
-  SearchRemindersOptions
+  SearchRemindersOptions,
+  UpdateReminderOptions
 } from "./types.js";
 
 export class RemindersClient {
@@ -50,5 +51,9 @@ export class RemindersClient {
 
   completeReminder(options: CompleteReminderOptions): Promise<ReminderItem> {
     return this.runner<ReminderItem>("completeReminder", options);
+  }
+
+  updateReminder(options: UpdateReminderOptions): Promise<ReminderItem> {
+    return this.runner<ReminderItem>("updateReminder", options);
   }
 }

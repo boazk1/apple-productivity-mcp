@@ -78,4 +78,30 @@ describe("NotesClient", () => {
       ]
     ]);
   });
+
+  it("updates notes through the runner", async () => {
+    const calls: Array<[string, unknown]> = [];
+    const runner: ReminderRunner = async (operation, payload) => {
+      calls.push([operation, payload]);
+      return note;
+    };
+
+    const client = new NotesClient(runner);
+    await client.updateNote({
+      id: "notes-note-1",
+      title: "Updated launch plan",
+      body: "Updated body."
+    });
+
+    expect(calls).toEqual([
+      [
+        "updateNote",
+        {
+          id: "notes-note-1",
+          title: "Updated launch plan",
+          body: "Updated body."
+        }
+      ]
+    ]);
+  });
 });

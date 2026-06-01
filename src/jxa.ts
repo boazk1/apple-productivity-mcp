@@ -11,15 +11,18 @@ const ALLOWED_OPERATIONS = new Set([
   "searchReminders",
   "createReminder",
   "completeReminder",
+  "updateReminder",
   "listCalendars",
   "listCalendarEvents",
   "searchCalendarEvents",
   "createCalendarEvent",
+  "updateCalendarEvent",
   "listNotesFolders",
   "listNotes",
   "searchNotes",
   "createNote",
-  "appendToNote"
+  "appendToNote",
+  "updateNote"
 ]);
 
 const SCRIPT = String.raw`
@@ -155,6 +158,37 @@ function completeReminder(app, options) {
   return serializeReminder(reminder, matches[0].listName);
 }
 
+function updateReminder(app, options) {
+  if (!options.id) {
+    fail("id is required.");
+  }
+
+  const matches = allReminders(app, {
+    listName: options.listName,
+    includeCompleted: true,
+    dateFilter: "all"
+  }).filter((item) => item.id === options.id);
+
+  if (matches.length === 0) {
+    fail("No matching reminder was found.");
+  }
+
+  const list = getList(app, matches[0].listName);
+  const reminder = list.reminders.byId(options.id);
+
+  if (Object.prototype.hasOwnProperty.call(options, "title")) {
+    reminder.name = options.title;
+  }
+  if (Object.prototype.hasOwnProperty.call(options, "notes")) {
+    reminder.body = options.notes || "";
+  }
+  if (Object.prototype.hasOwnProperty.call(options, "dueDate")) {
+    reminder.dueDate = options.dueDate ? parseDate(options.dueDate, "dueDate") : null;
+  }
+
+  return serializeReminder(reminder, matches[0].listName);
+}
+
 function calendarApp() {
   return Application("/System/Applications/Calendar.app");
 }
@@ -256,6 +290,48 @@ function createCalendarEvent(app, options) {
   const event = app.Event(properties);
   calendar.events.push(event);
   return serializeEvent(event, calendar.name());
+}
+
+function updateCalendarEvent(app, options) {
+  if (!options.id) {
+    fail("id is required.");
+  }
+
+  const calendars = options.calendarName ? [getCalendar(app, options.calendarName)] : app.calendars();
+  for (const calendar of calendars) {
+    const calendarName = calendar.name();
+    for (const event of calendar.events()) {
+      if (event.id() !== options.id) {
+        continue;
+      }
+
+      if (Object.prototype.hasOwnProperty.call(options, "title")) {
+        event.summary = options.title;
+      }
+      if (Object.prototype.hasOwnProperty.call(options, "notes")) {
+        event.description = options.notes || "";
+      }
+      if (Object.prototype.hasOwnProperty.call(options, "location")) {
+        event.location = options.location || "";
+      }
+      if (Object.prototype.hasOwnProperty.call(options, "allDay")) {
+        event.alldayEvent = Boolean(options.allDay);
+      }
+      if (Object.prototype.hasOwnProperty.call(options, "startDate")) {
+        event.startDate = parseDate(options.startDate, "startDate");
+      }
+      if (Object.prototype.hasOwnProperty.call(options, "endDate")) {
+        event.endDate = parseDate(options.endDate, "endDate");
+      }
+      if (new Date(event.endDate()) <= new Date(event.startDate())) {
+        fail("endDate must be after startDate.");
+      }
+
+      return serializeEvent(event, calendarName);
+    }
+  }
+
+  fail("No matching calendar event was found.");
 }
 
 function notesApp() {
@@ -389,6 +465,23 @@ function appendToNote(app, options) {
   return serializeNote(found.note, found.folderName);
 }
 
+function updateNote(app, options) {
+  if (!options.id) {
+    fail("id is required.");
+  }
+
+  const found = findSingleNote(app, options);
+
+  if (Object.prototype.hasOwnProperty.call(options, "title")) {
+    found.note.name = options.title;
+  }
+  if (Object.prototype.hasOwnProperty.call(options, "body")) {
+    found.note.body = "<h1>" + escapeHtml(options.title || found.note.name()) + "</h1>" + paragraphs(options.body || "");
+  }
+
+  return serializeNote(found.note, found.folderName);
+}
+
 function run(operation, input) {
   switch (operation) {
     case "listReminderLists":
@@ -396,17 +489,20 @@ function run(operation, input) {
     case "searchReminders":
     case "createReminder":
     case "completeReminder":
+    case "updateReminder":
       return runReminders(operation, input);
     case "listCalendars":
     case "listCalendarEvents":
     case "searchCalendarEvents":
     case "createCalendarEvent":
+    case "updateCalendarEvent":
       return runCalendar(operation, input);
     case "listNotesFolders":
     case "listNotes":
     case "searchNotes":
     case "createNote":
     case "appendToNote":
+    case "updateNote":
       return runNotes(operation, input);
     default:
       fail("Unknown operation: " + operation);
@@ -436,6 +532,8 @@ function runReminders(operation, input) {
       return createReminder(app, input);
     case "completeReminder":
       return completeReminder(app, input);
+    case "updateReminder":
+      return updateReminder(app, input);
     default:
       fail("Unknown operation: " + operation);
   }
@@ -460,6 +558,8 @@ function runCalendar(operation, input) {
     }
     case "createCalendarEvent":
       return createCalendarEvent(app, input);
+    case "updateCalendarEvent":
+      return updateCalendarEvent(app, input);
     default:
       fail("Unknown operation: " + operation);
   }
@@ -485,6 +585,8 @@ function runNotes(operation, input) {
       return createNote(app, input);
     case "appendToNote":
       return appendToNote(app, input);
+    case "updateNote":
+      return updateNote(app, input);
     default:
       fail("Unknown operation: " + operation);
   }

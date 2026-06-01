@@ -107,4 +107,30 @@ describe("CalendarClient", () => {
       ]
     ]);
   });
+
+  it("updates events through the calendar operation", async () => {
+    const calls: Array<[string, unknown]> = [];
+    const runner: ReminderRunner = async (operation, payload) => {
+      calls.push([operation, payload]);
+      return event;
+    };
+
+    const client = new CalendarClient(runner);
+    await client.updateEvent({
+      id: "calendar-event-1",
+      title: "Planning review",
+      location: "Office"
+    });
+
+    expect(calls).toEqual([
+      [
+        "updateCalendarEvent",
+        {
+          id: "calendar-event-1",
+          title: "Planning review",
+          location: "Office"
+        }
+      ]
+    ]);
+  });
 });

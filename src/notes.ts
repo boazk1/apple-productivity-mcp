@@ -5,7 +5,8 @@ import type {
   NoteItem,
   NotesFolder,
   ReminderRunner,
-  SearchNotesOptions
+  SearchNotesOptions,
+  UpdateNoteOptions
 } from "./types.js";
 
 export class NotesClient {
@@ -29,5 +30,9 @@ export class NotesClient {
 
   appendToNote(options: AppendNoteOptions): Promise<NoteItem> {
     return this.runner<NoteItem>("appendToNote", options);
+  }
+
+  updateNote(options: UpdateNoteOptions): Promise<NoteItem> {
+    return this.runner<NoteItem>("updateNote", options);
   }
 }

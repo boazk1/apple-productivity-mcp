@@ -85,6 +85,32 @@ describe("RemindersClient", () => {
       ]
     ]);
   });
+
+  it("updates reminders through the runner", async () => {
+    const calls: Array<[string, unknown]> = [];
+    const runner: ReminderRunner = async (operation, payload) => {
+      calls.push([operation, payload]);
+      return reminder;
+    };
+
+    const client = new RemindersClient(runner);
+    await client.updateReminder({
+      id: "x-apple-reminder://123",
+      title: "Pay rent today",
+      dueDate: null
+    });
+
+    expect(calls).toEqual([
+      [
+        "updateReminder",
+        {
+          id: "x-apple-reminder://123",
+          title: "Pay rent today",
+          dueDate: null
+        }
+      ]
+    ]);
+  });
 });
 
 describe("runJxa guardrails", () => {

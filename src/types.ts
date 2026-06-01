@@ -39,6 +39,14 @@ export type CompleteReminderOptions = {
   listName?: string;
 };
 
+export type UpdateReminderOptions = {
+  id: string;
+  title?: string;
+  notes?: string;
+  listName?: string;
+  dueDate?: string | null;
+};
+
 export type CalendarItem = {
   id: string;
   name: string;
@@ -71,6 +79,17 @@ export type CreateCalendarEventOptions = {
   calendarName?: string;
   startDate: string;
   endDate: string;
+  notes?: string;
+  location?: string;
+  allDay?: boolean;
+};
+
+export type UpdateCalendarEventOptions = {
+  id: string;
+  calendarName?: string;
+  title?: string;
+  startDate?: string;
+  endDate?: string;
   notes?: string;
   location?: string;
   allDay?: boolean;
@@ -109,6 +128,13 @@ export type AppendNoteOptions = {
   title?: string;
   folderName?: string;
   text: string;
+};
+
+export type UpdateNoteOptions = {
+  id: string;
+  title?: string;
+  body?: string;
+  folderName?: string;
 };
 
 export type ReminderRunner = <T>(operation: string, payload?: unknown) => Promise<T>;

@@ -13,6 +13,9 @@ const folderNameSchema = z.string().min(1).optional().describe("Apple Notes fold
 const includeCompletedSchema = z.boolean().optional().default(false);
 const reminderIdSchema = z.string().min(1).optional().describe("Apple Reminders id from list_reminders or search_reminders.");
 const noteIdSchema = z.string().min(1).optional().describe("Apple Notes id from list_notes or search_notes.");
+const requiredNoteIdSchema = z.string().min(1).describe("Apple Notes id from list_notes or search_notes.");
+const requiredReminderIdSchema = z.string().min(1).describe("Apple Reminders id from list_reminders or search_reminders.");
+const requiredEventIdSchema = z.string().min(1).describe("Apple Calendar event id from list_calendar_events or search_calendar_events.");
 export const dueDateSchema = z
   .string()
   .refine((value) => !Number.isNaN(Date.parse(value)), "dueDate must be a valid date string.")
@@ -75,6 +78,25 @@ function summarizeNotes(notes: NoteItem[]) {
   };
 }
 
+function isReadOnlyMode() {
+  return process.env.APPLE_PRODUCTIVITY_READ_ONLY === "true" || process.env.APPLE_PRODUCTIVITY_READ_ONLY === "1";
+}
+
+function readOnlyResult() {
+  return jsonContent({
+    error: "Read-only mode is enabled.",
+    hint: "Unset APPLE_PRODUCTIVITY_READ_ONLY to enable write tools."
+  });
+}
+
+function writeTool<T>(handler: () => Promise<T>) {
+  if (isReadOnlyMode()) {
+    return readOnlyResult();
+  }
+
+  return handler();
+}
+
 export function createServer(runner: ReminderRunner = runJxa) {
   const reminders = new RemindersClient(runner);
   const calendar = new CalendarClient(runner);
@@ -133,7 +155,7 @@ export function createServer(runner: ReminderRunner = runJxa) {
         dueDate: dueDateSchema
       }
     },
-    async (args) => jsonContent(await reminders.createReminder(args))
+    async (args) => writeTool(async () => jsonContent(await reminders.createReminder(args)))
   );
 
   server.registerTool(
@@ -147,7 +169,23 @@ export function createServer(runner: ReminderRunner = runJxa) {
         listName: listNameSchema
       }
     },
-    async (args) => jsonContent(await reminders.completeReminder(args))
+    async (args) => writeTool(async () => jsonContent(await reminders.completeReminder(args)))
+  );
+
+  server.registerTool(
+    "update_reminder",
+    {
+      title: "Update reminder",
+      description: "Update an Apple Reminder by id.",
+      inputSchema: {
+        id: requiredReminderIdSchema,
+        title: z.string().min(1).optional().describe("New reminder title."),
+        notes: z.string().optional().describe("New reminder notes."),
+        listName: listNameSchema,
+        dueDate: dueDateSchema.nullable().describe("New due date, or null to clear it.")
+      }
+    },
+    async (args) => writeTool(async () => jsonContent(await reminders.updateReminder(args)))
   );
 
   server.registerTool(
@@ -229,7 +267,26 @@ export function createServer(runner: ReminderRunner = runJxa) {
         allDay: z.boolean().optional().default(false).describe("Whether this is an all-day event.")
       }
     },
-    async (args) => jsonContent(await calendar.createEvent(args))
+    async (args) => writeTool(async () => jsonContent(await calendar.createEvent(args)))
+  );
+
+  server.registerTool(
+    "update_calendar_event",
+    {
+      title: "Update calendar event",
+      description: "Update an Apple Calendar event by id.",
+      inputSchema: {
+        id: requiredEventIdSchema,
+        calendarName: calendarNameSchema,
+        title: z.string().min(1).optional().describe("New event title."),
+        startDate: calendarDateSchema.optional().describe("New event start date."),
+        endDate: calendarDateSchema.optional().describe("New event end date."),
+        notes: z.string().optional().describe("New event notes."),
+        location: z.string().optional().describe("New event location."),
+        allDay: z.boolean().optional().describe("Whether this is an all-day event.")
+      }
+    },
+    async (args) => writeTool(async () => jsonContent(await calendar.updateEvent(args)))
   );
 
   server.registerTool(
@@ -304,7 +361,7 @@ export function createServer(runner: ReminderRunner = runJxa) {
         folderName: folderNameSchema
       }
     },
-    async (args) => jsonContent(await notes.createNote(args))
+    async (args) => writeTool(async () => jsonContent(await notes.createNote(args)))
   );
 
   server.registerTool(
@@ -319,7 +376,22 @@ export function createServer(runner: ReminderRunner = runJxa) {
         text: z.string().min(1).describe("Text to append.")
       }
     },
-    async (args) => jsonContent(await notes.appendToNote(args))
+    async (args) => writeTool(async () => jsonContent(await notes.appendToNote(args)))
+  );
+
+  server.registerTool(
+    "update_note",
+    {
+      title: "Update note",
+      description: "Update an Apple Note by id.",
+      inputSchema: {
+        id: requiredNoteIdSchema,
+        title: z.string().min(1).optional().describe("New note title."),
+        body: z.string().optional().describe("New note body."),
+        folderName: folderNameSchema
+      }
+    },
+    async (args) => writeTool(async () => jsonContent(await notes.updateNote(args)))
   );
 
   return server;

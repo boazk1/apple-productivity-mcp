@@ -4,7 +4,8 @@ import type {
   CreateCalendarEventOptions,
   ListCalendarEventsOptions,
   ReminderRunner,
-  SearchCalendarEventsOptions
+  SearchCalendarEventsOptions,
+  UpdateCalendarEventOptions
 } from "./types.js";
 
 export class CalendarClient {
@@ -47,6 +48,10 @@ export class CalendarClient {
 
   createEvent(options: CreateCalendarEventOptions): Promise<CalendarEvent> {
     return this.runner<CalendarEvent>("createCalendarEvent", options);
+  }
+
+  updateEvent(options: UpdateCalendarEventOptions): Promise<CalendarEvent> {
+    return this.runner<CalendarEvent>("updateCalendarEvent", options);
   }
 }
 
