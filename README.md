@@ -5,11 +5,12 @@
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 A private, local MCP server that lets AI assistants work with Apple Reminders
-Apple Calendar, and Apple Notes.
+Apple Calendar, Apple Notes, and Apple Contacts.
 
 This server runs on your Mac and talks to the local Reminders, Calendar, and
-Notes apps through JXA (JavaScript for Automation). Your reminders, calendar
-events, and notes are not uploaded to a third-party API by this package.
+Notes apps through JXA (JavaScript for Automation). Contacts support is read-only.
+Your reminders, calendar events, notes, and contacts are not uploaded to a
+third-party API by this package.
 
 ## Tools
 
@@ -34,15 +35,17 @@ events, and notes are not uploaded to a third-party API by this package.
 - `create_note` - create a note
 - `append_to_note` - append text to a note
 - `update_note` - update a note by id
+- `search_contacts` - search Contacts by name, organization, email, or phone
+- `get_contact` - get a contact by id
 
 ## Requirements
 
-- macOS with Apple Reminders, Apple Calendar, and Apple Notes
+- macOS with Apple Reminders, Apple Calendar, Apple Notes, and Apple Contacts
 - Node.js 20 or newer
 - An MCP client such as Claude Desktop, Cursor, or Codex
 
 On first use, macOS may ask for permission to let your terminal or MCP client
-control Reminders, Calendar, or Notes. Allow it for the server to work.
+control Reminders, Calendar, Notes, or Contacts. Allow it for the server to work.
 
 ## Install
 
@@ -107,6 +110,7 @@ For a local checkout, use the built entrypoint:
 - "Find my notes about the launch plan."
 - "Create a note with these meeting takeaways."
 - "Append this checklist to my project note."
+- "Find Ada's email in my contacts."
 - "Run in read-only mode while I try this server."
 
 ## Development
@@ -119,7 +123,7 @@ npm run build
 ```
 
 Apple app access is isolated behind small client classes, so unit tests can run
-without opening or modifying your Reminders, Calendar, or Notes data.
+without opening or modifying your Reminders, Calendar, Notes, or Contacts data.
 
 ## Project
 

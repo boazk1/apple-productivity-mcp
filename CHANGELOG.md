@@ -15,6 +15,8 @@ and uses semantic versioning once releases begin.
   events, and checking today's or upcoming events.
 - Apple Notes tools for listing folders, listing/searching notes, creating
   notes, and appending to existing notes.
+- Read-only Apple Contacts tools for searching contacts and getting a contact
+  by id.
 - Update tools for reminders, calendar events, and notes.
 - Read-only mode via `APPLE_PRODUCTIVITY_READ_ONLY=1`.
 - Installation, integration testing, and release documentation.

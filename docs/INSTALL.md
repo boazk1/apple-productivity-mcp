@@ -1,7 +1,7 @@
 # Installation
 
 `apple-productivity-mcp` runs locally on macOS and connects MCP clients to
-Apple Reminders, Calendar, and Notes.
+Apple Reminders, Calendar, Notes, and Contacts.
 
 ## Claude Desktop
 
@@ -57,7 +57,8 @@ Then point your MCP client at:
 ## Read-only mode
 
 Set `APPLE_PRODUCTIVITY_READ_ONLY=1` to keep read/search tools enabled while
-blocking write tools such as create, update, complete, and append.
+blocking write tools such as create, update, complete, and append. Contacts
+tools are always read-only.
 
 ```json
 {
@@ -74,12 +75,13 @@ blocking write tools such as create, update, complete, and append.
 
 ## macOS permissions
 
-Open Reminders, Calendar, and Notes at least once before using the server. On
-first tool use, macOS may ask whether your MCP client or terminal can control
-the relevant app.
+Open Reminders, Calendar, Notes, and Contacts at least once before using the
+server. On first tool use, macOS may ask whether your MCP client or terminal can
+control the relevant app.
 
 If permissions get stuck, check:
 
 System Settings -> Privacy & Security -> Automation
 
-Allow your MCP client or terminal to control Reminders, Calendar, and Notes.
+Allow your MCP client or terminal to control Reminders, Calendar, Notes, and
+Contacts.

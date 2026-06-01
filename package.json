@@ -1,7 +1,7 @@
 {
   "name": "apple-productivity-mcp",
   "version": "0.1.0",
-  "description": "A private, local MCP server that lets AI assistants work with Apple Reminders, Calendar, and Notes.",
+  "description": "A private, local MCP server that lets AI assistants work with Apple Reminders, Calendar, Notes, and Contacts.",
   "type": "module",
   "homepage": "https://github.com/boazk1/apple-productivity-mcp#readme",
   "repository": {
@@ -38,9 +38,11 @@
     "apple-reminders",
     "apple-calendar",
     "apple-notes",
+    "apple-contacts",
     "calendar",
     "reminders",
     "notes",
+    "contacts",
     "ai"
   ],
   "license": "MIT",

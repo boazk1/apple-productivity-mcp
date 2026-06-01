@@ -22,7 +22,9 @@ const ALLOWED_OPERATIONS = new Set([
   "searchNotes",
   "createNote",
   "appendToNote",
-  "updateNote"
+  "updateNote",
+  "searchContacts",
+  "getContact"
 ]);
 
 const SCRIPT = String.raw`
@@ -482,6 +484,37 @@ function updateNote(app, options) {
   return serializeNote(found.note, found.folderName);
 }
 
+function contactsApp() {
+  return Application("/System/Applications/Contacts.app");
+}
+
+function valuesOf(items) {
+  try {
+    return items().map((item) => item.value()).filter(Boolean);
+  } catch (_error) {
+    return [];
+  }
+}
+
+function fullName(person) {
+  const parts = [person.firstName(), person.middleName(), person.lastName()].filter(Boolean);
+  return parts.join(" ") || person.name() || "Unnamed contact";
+}
+
+function serializeContact(person) {
+  return {
+    id: person.id(),
+    name: fullName(person),
+    organization: person.organization() || null,
+    phones: valuesOf(person.phones),
+    emails: valuesOf(person.emails)
+  };
+}
+
+function allContacts(app) {
+  return app.people().map(serializeContact);
+}
+
 function run(operation, input) {
   switch (operation) {
     case "listReminderLists":
@@ -504,6 +537,9 @@ function run(operation, input) {
     case "appendToNote":
     case "updateNote":
       return runNotes(operation, input);
+    case "searchContacts":
+    case "getContact":
+      return runContacts(operation, input);
     default:
       fail("Unknown operation: " + operation);
   }
@@ -587,6 +623,33 @@ function runNotes(operation, input) {
       return appendToNote(app, input);
     case "updateNote":
       return updateNote(app, input);
+    default:
+      fail("Unknown operation: " + operation);
+  }
+}
+
+function runContacts(operation, input) {
+  const app = contactsApp();
+  app.includeStandardAdditions = true;
+
+  switch (operation) {
+    case "searchContacts": {
+      const query = input.query.toLowerCase();
+      const limit = Math.max(1, Math.min(Number(input.limit || 10), 50));
+      return allContacts(app).filter((contact) =>
+        contact.name.toLowerCase().includes(query) ||
+        (contact.organization || "").toLowerCase().includes(query) ||
+        contact.emails.some((email) => email.toLowerCase().includes(query)) ||
+        contact.phones.some((phone) => phone.toLowerCase().includes(query))
+      ).slice(0, limit);
+    }
+    case "getContact": {
+      const matches = allContacts(app).filter((contact) => contact.id === input.id);
+      if (matches.length === 0) {
+        fail("No matching contact was found.");
+      }
+      return matches[0];
+    }
     default:
       fail("Unknown operation: " + operation);
   }

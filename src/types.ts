@@ -137,4 +137,21 @@ export type UpdateNoteOptions = {
   folderName?: string;
 };
 
+export type ContactItem = {
+  id: string;
+  name: string;
+  organization: string | null;
+  phones: string[];
+  emails: string[];
+};
+
+export type SearchContactsOptions = {
+  query: string;
+  limit?: number;
+};
+
+export type GetContactOptions = {
+  id: string;
+};
+
 export type ReminderRunner = <T>(operation: string, payload?: unknown) => Promise<T>;

@@ -1,8 +1,8 @@
 # Security Policy
 
 `apple-productivity-mcp` is a local MCP server for private Apple Reminders,
-Calendar, and Notes data. Please avoid sharing reminder, calendar, or notes
-content in public issues.
+Calendar, Notes, and Contacts data. Please avoid sharing reminder, calendar,
+notes, or contact content in public issues.
 
 ## Supported versions
 
@@ -18,14 +18,15 @@ available, email the maintainer listed on the npm package and include:
 - reproduction steps
 - any suggested fix
 
-Do not include private reminder, calendar, or notes data unless it is strictly
-necessary.
+Do not include private reminder, calendar, notes, or contact data unless it is
+strictly necessary.
 
 ## Security expectations
 
-- The server does not intentionally send reminders, calendar events, or notes to
-  any third-party API.
+- The server does not intentionally send reminders, calendar events, notes, or
+  contacts to any third-party API.
 - Tool responses may contain reminder titles, event titles, note titles, note
-  bodies, locations, due dates, event times, and list/folder/calendar names.
+  bodies, contact names, emails, phone numbers, locations, due dates, event
+  times, and list/folder/calendar names.
 - MCP clients connected to this server should be treated as trusted local
-  software with access to your Reminders, Calendar, and Notes data.
+  software with access to your Reminders, Calendar, Notes, and Contacts data.

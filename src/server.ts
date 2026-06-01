@@ -2,10 +2,11 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 
 import { CalendarClient } from "./calendar.js";
+import { ContactsClient } from "./contacts.js";
 import { runJxa } from "./jxa.js";
 import { NotesClient } from "./notes.js";
 import { RemindersClient } from "./reminders.js";
-import type { CalendarEvent, CalendarItem, NoteItem, NotesFolder, ReminderItem, ReminderList, ReminderRunner } from "./types.js";
+import type { CalendarEvent, CalendarItem, ContactItem, NoteItem, NotesFolder, ReminderItem, ReminderList, ReminderRunner } from "./types.js";
 
 const listNameSchema = z.string().min(1).optional().describe("Apple Reminders list name.");
 const calendarNameSchema = z.string().min(1).optional().describe("Apple Calendar name.");
@@ -16,6 +17,7 @@ const noteIdSchema = z.string().min(1).optional().describe("Apple Notes id from 
 const requiredNoteIdSchema = z.string().min(1).describe("Apple Notes id from list_notes or search_notes.");
 const requiredReminderIdSchema = z.string().min(1).describe("Apple Reminders id from list_reminders or search_reminders.");
 const requiredEventIdSchema = z.string().min(1).describe("Apple Calendar event id from list_calendar_events or search_calendar_events.");
+const contactIdSchema = z.string().min(1).describe("Apple Contacts id from search_contacts.");
 export const dueDateSchema = z
   .string()
   .refine((value) => !Number.isNaN(Date.parse(value)), "dueDate must be a valid date string.")
@@ -78,6 +80,13 @@ function summarizeNotes(notes: NoteItem[]) {
   };
 }
 
+function summarizeContacts(contacts: ContactItem[]) {
+  return {
+    count: contacts.length,
+    contacts
+  };
+}
+
 function isReadOnlyMode() {
   return process.env.APPLE_PRODUCTIVITY_READ_ONLY === "true" || process.env.APPLE_PRODUCTIVITY_READ_ONLY === "1";
 }
@@ -101,6 +110,7 @@ export function createServer(runner: ReminderRunner = runJxa) {
   const reminders = new RemindersClient(runner);
   const calendar = new CalendarClient(runner);
   const notes = new NotesClient(runner);
+  const contacts = new ContactsClient(runner);
   const server = new McpServer({
     name: "apple-productivity-mcp",
     version: "0.1.0"
@@ -392,6 +402,31 @@ export function createServer(runner: ReminderRunner = runJxa) {
       }
     },
     async (args) => writeTool(async () => jsonContent(await notes.updateNote(args)))
+  );
+
+  server.registerTool(
+    "search_contacts",
+    {
+      title: "Search contacts",
+      description: "Search Apple Contacts by name, organization, email, or phone number.",
+      inputSchema: {
+        query: z.string().min(1).describe("Case-insensitive search query."),
+        limit: z.number().int().min(1).max(50).optional().default(10).describe("Maximum contacts to return.")
+      }
+    },
+    async (args) => jsonContent(summarizeContacts(await contacts.searchContacts(args)))
+  );
+
+  server.registerTool(
+    "get_contact",
+    {
+      title: "Get contact",
+      description: "Get one Apple Contacts entry by id.",
+      inputSchema: {
+        id: contactIdSchema
+      }
+    },
+    async (args) => jsonContent(await contacts.getContact(args))
   );
 
   return server;
